@@ -1,24 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import axios from 'axios';
+import { getArticleById, createArticle, updateArticle } from '../../features/articles/articleApi';
 
 import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 
-import { Form, Button, Card, Container, Row, Col, Spinner, Badge } from 'react-bootstrap';
+import { Form, Button, Card, Row, Col, Spinner } from 'react-bootstrap';
 
 import { useAuth } from '../../hooks/useAuth';
 
-function PostForm(props) {
+function PostForm() {
   let navigate = useNavigate();
 
   let { id } = useParams(); // Get the userId param from the URL.
   const isEditMode = !!id; // 判断是否为编辑模式
-  const apiUrl = `/api/api/articles`;
-  console.log(id);
 
-  //
   const [post, setPost] = useState({
     _id: '',
     title: '',
@@ -33,20 +29,16 @@ function PostForm(props) {
 
   // 1. 如果是编辑模式，初始化时获取旧数据
   useEffect(() => {
-    if (isEditMode) {
-      setFetching(true);
-      console.log(`apiUrl: ${apiUrl}/${id}`);
-      axios
-        .get(`${apiUrl}/${id}`)
-        .then((res) => {
-          setPost(res.data.data);
-          setFetching(false);
-        })
-        .catch((err) => {
-          console.error('加载文章失败', err);
-          setFetching(false);
-        });
-    }
+    const fetchData = async () => {
+      if (isEditMode) {
+        setFetching(true);
+        const result = await getArticleById(id);
+        console.log(`result: `, result);
+        setPost(result.data);
+        setFetching(false);
+      }
+    };
+    fetchData();
   }, [id, isEditMode]);
 
   // 配置项：可以自定义工具栏、自动聚焦等
@@ -61,7 +53,6 @@ function PostForm(props) {
 
   // 处理普通输入框
   const onChange = (e) => {
-    // 现在的 React 17+ 已经不需要 e.persist() 了，可以直接删掉
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
@@ -79,12 +70,12 @@ function PostForm(props) {
     try {
       if (isEditMode) {
         // 编辑操作
-        await axios.put(`${apiUrl}/${id}`, payload);
+        await updateArticle(id, payload);
       } else {
         // 创建操作
-        await axios.post(apiUrl, payload);
+        await createArticle(payload);
       }
-      navigate('/admin/posts'); // 成功后跳转回列表
+      navigate('/admin/posts');
     } catch (error) {
       console.error('提交失败', error);
       alert('保存失败，请检查后端接口');

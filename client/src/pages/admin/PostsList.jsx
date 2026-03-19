@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, Spinner, Button, Container, Row, Col, Badge } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
+import { getArticles } from '../../features/articles/articleApi';
 
 function PostsList(props) {
   let navigate = useNavigate();
@@ -12,8 +13,8 @@ function PostsList(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get(apiUrl);
-        setData(result.data.data);
+        const result = await getArticles();
+        setData(result.data);
         setShowLoading(false);
       } catch (error) {
         console.error('获取文章列表失败:', error);

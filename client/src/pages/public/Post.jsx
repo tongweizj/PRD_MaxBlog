@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// this component is used to show a single article
-function Post(props) {
+import { getArticleById } from '../../features/articles/articleApi';
+
+function Post() {
   let { id } = useParams();
   //
   const [data, setData] = useState({});
   const [showLoading, setShowLoading] = useState(true);
-  const apiUrl = '/api/api/articles/' + id;
 
   useEffect(() => {
     setShowLoading(false);
     const fetchData = async () => {
-      const result = await axios(apiUrl);
-      console.log('result:', result.data.data);
-      setData(result.data.data);
+      const result = await getArticleById(id);
+      setData(result.data);
       setShowLoading(false);
     };
 

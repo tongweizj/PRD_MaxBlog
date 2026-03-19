@@ -19,10 +19,9 @@ import PostForm from './pages/admin/PostForm';
 import BlogSetting from './pages/admin/BlogSetting';
 
 // AdminUser
-import List from './pages/admin/List';
+
 import EditUser from './pages/admin/EditUser';
 import ShowUser from './pages/admin/ShowUser';
-import CreateUser from './pages/admin/CreateUser';
 
 // auth
 import Login from './pages/auth/Login';
@@ -40,9 +39,6 @@ function App() {
           <Route element={<PublicLayout />}>
             <Route index element={<Home />} />
             <Route path="home" element={<Home />} />
-            <Route path="create" element={<CreateUser />} />
-            <Route path="login" element={<Login />} />
-            <Route path="list" element={<List />} />
             <Route path="writing" element={<ListArticles />} />
             <Route path="post/:id" element={<PostDetail />} />
           </Route>
@@ -62,11 +58,8 @@ function App() {
             <Route path="post/edit/:id" element={<PostForm />} />
             <Route path="setting" element={<BlogSetting />} />
             {/* TODO */}
-            <Route path="user/create" element={<CreateUser />} />
             <Route path="user/:id" element={<ShowUser />} />
             <Route path="user/edit/:id" element={<EditUser />} />
-
-            <Route path="users" element={<List />} />
           </Route>
         </Routes>
       </div>

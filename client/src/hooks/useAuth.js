@@ -16,7 +16,7 @@ export function useAuth() {
         });
 
         // 如果成功，返回的是 payload.username
-        setAuthname(response.data);
+        setAuthname(response.data.data);
         console.log('response.data:', response.data);
         setIsAuthLoading(false);
       } catch (error) {
