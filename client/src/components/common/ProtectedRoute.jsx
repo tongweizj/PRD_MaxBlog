@@ -1,11 +1,11 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth'; 
+import { useAuth } from '../../hooks/useAuth';
 import { Spinner } from 'react-bootstrap';
 
 // 这个组件包裹任何需要保护的内容
 const ProtectedRoute = ({ children }) => {
-  const { authname, isAuthLoading} = useAuth();
+  const { authname, isAuthLoading } = useAuth();
 
   if (isAuthLoading) {
     return (

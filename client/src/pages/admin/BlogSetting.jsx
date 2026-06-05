@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Spinner, Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import SimpleMDE from "react-simplemde-editor";
-import "easymde/dist/easymde.min.css";
+import SimpleMDE from 'react-simplemde-editor';
+import 'easymde/dist/easymde.min.css';
 
 function BlogSetting(props) {
   let navigate = useNavigate();
@@ -14,7 +14,7 @@ function BlogSetting(props) {
     profile: '',
     project: '',
     blogname: '',
-    blogdescription: ''
+    blogdescription: '',
   });
   const [showLoading, setShowLoading] = useState(true);
 
@@ -24,11 +24,11 @@ function BlogSetting(props) {
     const fetchData = async () => {
       try {
         setShowLoading(true);
-        const result = await axios.get("/api/api/site/");
+        const result = await axios.get('/api/api/site/');
         // 确保合并默认值防止 SimpleMDE 因为 null 报错
-        setSiteData(prev => ({ ...prev, ...result.data }));
+        setSiteData((prev) => ({ ...prev, ...result.data.data }));
       } catch (error) {
-        console.error("加载数据失败:", error);
+        console.error('加载数据失败:', error);
       } finally {
         setShowLoading(false);
       }
@@ -39,23 +39,27 @@ function BlogSetting(props) {
   const updateSiteData = (e) => {
     e.preventDefault();
     setShowLoading(true);
-    axios.put(`/api/api/site`, siteData)
+    axios
+      .put(`/api/api/site`, siteData)
       .then(() => {
         setShowLoading(false);
         navigate('/admin/dashboard');
       })
       .catch((error) => {
-        console.error("更新失败:", error);
+        console.error('更新失败:', error);
         setShowLoading(false);
       });
   };
 
-  const mdeOptions = useMemo(() => ({
-    spellChecker: false,
-    placeholder: "输入内容...",
-    minHeight: "200px",
-    status: false, // 隐藏状态栏更接近截图风格
-  }), []);
+  const mdeOptions = useMemo(
+    () => ({
+      spellChecker: false,
+      placeholder: '输入内容...',
+      minHeight: '200px',
+      status: false, // 隐藏状态栏更接近截图风格
+    }),
+    []
+  );
 
   if (isAuthLoading) {
     return (
@@ -71,7 +75,9 @@ function BlogSetting(props) {
       <h5 className="mb-2 fw-normal">Blog Settings</h5>
 
       {showLoading ? (
-        <div className="text-center p-5"><Spinner animation="grow" /></div>
+        <div className="text-center p-5">
+          <Spinner animation="grow" />
+        </div>
       ) : (
         <Form onSubmit={updateSiteData} className="bg-white">
           <Form.Group as={Row} className="mb-3 align-items-center">
@@ -102,7 +108,6 @@ function BlogSetting(props) {
           <Form.Group as={Row} className="mb-3">
             <Form.Label column sm={1}>
               Projects List
-
             </Form.Label>
             <Col sm={8}>
               <SimpleMDE
@@ -116,12 +121,10 @@ function BlogSetting(props) {
             </Col>
           </Form.Group>
 
-
           {/* Profile 编辑器 */}
           <Form.Group as={Row} className="mb-3">
             <Form.Label column sm={1} className="fw-bold">
               Site Profile
-
             </Form.Label>
             <Col sm={8}>
               <SimpleMDE
@@ -143,7 +146,6 @@ function BlogSetting(props) {
               </Button>
             </Col>
           </Row>
-
         </Form>
       )}
     </div>

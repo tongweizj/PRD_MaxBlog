@@ -1,5 +1,5 @@
-export default () => { 
-    return `<!doctype html>
+export default () => {
+  return `<!doctype html>
     <html lang="en"> 
     <head>
     <meta charset="utf-8">
@@ -8,6 +8,5 @@ export default () => {
     <body>
     <div id="root">Hello World</div> 
     </body>
-    </html>` 
-    }
-    
+    </html>`;
+};

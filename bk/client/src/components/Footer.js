@@ -4,7 +4,7 @@
   StudentID: 301034450
   Date: 20250201
 */
-import React from "react";
+import React from 'react';
 
 function Footer() {
   return (
@@ -19,9 +19,9 @@ export default Footer;
 // 内联样式
 const styles = {
   footer: {
-    backgroundColor: "#2d3748",
-    color: "white",
-    textAlign: "center",
-    padding: "1rem",
+    backgroundColor: '#2d3748',
+    color: 'white',
+    textAlign: 'center',
+    padding: '1rem',
   },
 };

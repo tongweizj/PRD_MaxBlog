@@ -1,34 +1,27 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Routes
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Layout
-import AdminLayout from './components/layout/AdminLayout';
-import PublicLayout from './components/layout/PublicLayout';
+import AdminLayout from './layout/AdminLayout';
+import PublicLayout from './layout/PublicLayout';
 
 // public
 import Home from './pages/public/Home';
 import PostDetail from './pages/public/Post';
-import ListArticles from "./pages/public/ListArticles";
+import ListArticles from './pages/public/ListArticles';
 
 // admin
-import Dashboard from './pages/admin/Dashboard'
+import Dashboard from './pages/admin/Dashboard';
 // AdminPost
-import PostsList from "./pages/admin/PostsList";
+import PostsList from './pages/admin/PostsList';
 import PostForm from './pages/admin/PostForm';
 import BlogSetting from './pages/admin/BlogSetting';
 
 // AdminUser
-import List from './pages/admin/List';
+
 import EditUser from './pages/admin/EditUser';
 import ShowUser from './pages/admin/ShowUser';
-import CreateUser from './pages/admin/CreateUser';
 
 // auth
 import Login from './pages/auth/Login';
@@ -36,49 +29,41 @@ import Register from './pages/auth/Register';
 
 //
 function App() {
-
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="login" element={< Login />} />
-          <Route path="signup" element={< Register />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Register />} />
 
           <Route element={<PublicLayout />}>
             <Route index element={<Home />} />
             <Route path="home" element={<Home />} />
-            <Route path="create" element={< CreateUser />} />
-            <Route path="login" element={< Login />} />
-            <Route path="list" element={< List />} />
-            <Route path="writing" element={< ListArticles />} />
-            <Route path="post/:id" element={< PostDetail />} />
+            <Route path="writing" element={<ListArticles />} />
+            <Route path="post/:id" element={<PostDetail />} />
           </Route>
 
-          <Route path="/admin" element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
-            <Route path="dashboard" element={< Dashboard />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<Dashboard />} />
 
-            <Route path="posts" element={< PostsList />} />
-            <Route path="post/create" element={< PostForm />} />
-            <Route path="post/edit/:id" element={< PostForm />} />
-            <Route path="setting" element={< BlogSetting />} />
+            <Route path="posts" element={<PostsList />} />
+            <Route path="post/create" element={<PostForm />} />
+            <Route path="post/edit/:id" element={<PostForm />} />
+            <Route path="setting" element={<BlogSetting />} />
             {/* TODO */}
-            <Route path="user/create" element={< CreateUser />} />
-            <Route path="user/:id" element={< ShowUser />} />
-            <Route path="user/edit/:id" element={< EditUser />} />
-            
-            <Route path="users" element={< List />} />
-
+            <Route path="user/:id" element={<ShowUser />} />
+            <Route path="user/edit/:id" element={<EditUser />} />
           </Route>
         </Routes>
       </div>
-
     </Router>
-
-
   );
 }
 

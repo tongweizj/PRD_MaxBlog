@@ -9,10 +9,10 @@ function ShowUser(props) {
   let navigate = useNavigate();
   // Get the userId param from the URL.
   let { id } = useParams();
-  console.log(id)
+  console.log(id);
   const [data, setData] = useState({});
   const [showLoading, setShowLoading] = useState(true);
-  const apiUrl = "/api/users/" + id;
+  const apiUrl = '/api/users/' + id;
   //runs only once after the first render
   useEffect(() => {
     setShowLoading(false);
@@ -26,34 +26,62 @@ function ShowUser(props) {
   }, []);
 
   const editUser = (id) => {
-   navigate('/edit/' + id);
+    navigate('/edit/' + id);
   };
 
   const deleteUser = (id) => {
     setShowLoading(true);
-    const user = { firstName: data.firstName, lastName: data.lastName, 
-      email: data.email,username: data.username, password: data.password };
-  
-    axios.delete(apiUrl, user)
+    const user = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      username: data.username,
+      password: data.password,
+    };
+
+    axios
+      .delete(apiUrl, user)
       .then((result) => {
         setShowLoading(false);
-        navigate('/list')
-      }).catch((error) => setShowLoading(false));
+        navigate('/list');
+      })
+      .catch((error) => setShowLoading(false));
   };
 
   return (
     <div>
-      {showLoading && <Spinner animation="border" role="status">
-        <span className="sr-only">Loading...</span>
-      </Spinner> }    
-        <h1>Name: {data.firstName}, {data.lastName}</h1>
-        <p>Email: {data.email}</p>
-        <p>User name: {data.username}</p>
+      {showLoading && (
+        <Spinner animation="border" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      )}
+      <h1>
+        Name: {data.firstName}, {data.lastName}
+      </h1>
+      <p>Email: {data.email}</p>
+      <p>User name: {data.username}</p>
 
-        <p>
-          <Button type="button" variant="primary" onClick={() => { editUser(data._id) }}>Edit</Button>&nbsp;
-          <Button type="button" variant="danger" onClick={() => { deleteUser(data._id) }}>Delete</Button>
-        </p>
+      <p>
+        <Button
+          type="button"
+          variant="primary"
+          onClick={() => {
+            editUser(data._id);
+          }}
+        >
+          Edit
+        </Button>
+        &nbsp;
+        <Button
+          type="button"
+          variant="danger"
+          onClick={() => {
+            deleteUser(data._id);
+          }}
+        >
+          Delete
+        </Button>
+      </p>
     </div>
   );
 }

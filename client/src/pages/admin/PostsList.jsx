@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Table,
-  Spinner,
-  Button,
-  Container,
-  Row,
-  Col,
-  Badge
-} from 'react-bootstrap';
+import { Table, Spinner, Button, Container, Row, Col, Badge } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
+import { getArticles } from '../../features/articles/articleApi';
 
 function PostsList(props) {
   let navigate = useNavigate();
   const [data, setData] = useState([]);
   const [showLoading, setShowLoading] = useState(true);
-  const apiUrl = "/api/api/articles";
+  const apiUrl = '/api/api/articles';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await axios.get(apiUrl);
+        const result = await getArticles();
         setData(result.data);
         setShowLoading(false);
       } catch (error) {
@@ -48,7 +41,11 @@ function PostsList(props) {
           <span className="text-muted small">All({data.length})</span>
         </Col>
         <Col xs="auto">
-          <Button variant="outline-primary" onClick={createPost} className="d-flex align-items-center">
+          <Button
+            variant="outline-primary"
+            onClick={createPost}
+            className="d-flex align-items-center"
+          >
             Add Post
           </Button>
         </Col>
@@ -79,25 +76,27 @@ function PostsList(props) {
                       <div className="fw-medium text-primary">{item.title}</div>
                       <small className="text-muted">{item._id}</small>
                     </td>
-                    <td className="align-middle small">
-                      {item.status}
-                    </td>
+                    <td className="align-middle small">{item.status}</td>
                     <td className="align-middle text-muted small">
                       {item.created ? new Date(item.created).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="text-end pe-4 align-middle">
-                      <span className="text-body-tertiary"><Link
-                        to={`/admin/post/edit/${item._id}`}
-                        className="btn btn-link btn-sm text-decoration-none p-0"
-                      >
-                        Edit
-                      </Link></span>
-                      <span className="ms-3 text-body-tertiary"><Link
-                        to={`/post/${item._id}`}
-                        className="btn btn-link btn-sm text-decoration-none p-0"
-                      >
-                        View
-                      </Link></span>
+                      <span className="text-body-tertiary">
+                        <Link
+                          to={`/admin/post/edit/${item._id}`}
+                          className="btn btn-link btn-sm text-decoration-none p-0"
+                        >
+                          Edit
+                        </Link>
+                      </span>
+                      <span className="ms-3 text-body-tertiary">
+                        <Link
+                          to={`/post/${item._id}`}
+                          className="btn btn-link btn-sm text-decoration-none p-0"
+                        >
+                          View
+                        </Link>
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -106,7 +105,9 @@ function PostsList(props) {
           ) : (
             <div className="text-center py-5">
               <p className="text-muted">暂无文章内容</p>
-              <Button variant="outline-primary" onClick={createPost}>立即去写第一篇</Button>
+              <Button variant="outline-primary" onClick={createPost}>
+                立即去写第一篇
+              </Button>
             </div>
           )}
         </div>
