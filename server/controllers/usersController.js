@@ -81,7 +81,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 export const isSignedIn = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
-    return sendResponse(res, 200, '未登录', { screen: 'auth' });
+    return sendResponse(res, 401, '未登录', { screen: 'auth' });
   }
 
   try {

@@ -41,7 +41,7 @@ function App() {
       const loginData = { auth: { username, password } };
       const res = await axios.post(apiUrl, loginData);
 
-      if (res.data.screen !== undefined) {
+      if (res.data.data.screen !== undefined) {
         navigate('/admin/dashboard');
       }
     } catch (e) {
