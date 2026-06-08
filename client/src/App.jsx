@@ -40,7 +40,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="home" element={<Home />} />
             <Route path="writing" element={<ListArticles />} />
-            <Route path="post/:id" element={<PostDetail />} />
+            <Route path="posts/:slug" element={<PostDetail />} />
           </Route>
 
           <Route

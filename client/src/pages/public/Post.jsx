@@ -3,10 +3,10 @@ import Spinner from 'react-bootstrap/Spinner';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getArticleById } from '../../features/articles/articleApi';
+import { getArticleBySlug } from '../../features/articles/articleApi';
 
 function Post() {
-  let { id } = useParams();
+  let { slug } = useParams();
   //
   const [data, setData] = useState({});
   const [showLoading, setShowLoading] = useState(true);
@@ -14,7 +14,7 @@ function Post() {
   useEffect(() => {
     setShowLoading(false);
     const fetchData = async () => {
-      const result = await getArticleById(id);
+      const result = await getArticleBySlug(slug);
       setData(result.data);
       setShowLoading(false);
     };

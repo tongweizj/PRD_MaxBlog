@@ -6,7 +6,9 @@ import {
   create,
   list,
   articleByID,
-  read,
+  articleBySlug,
+  readByID,
+  readBySlug,
   update,
   deleteArticle,
 } from '../controllers/articlesController.js';
@@ -17,9 +19,12 @@ const router = express.Router();
 router.route('/').get(list).post(auth.protect, create);
 
 // --- 路径：/api/articles/:articleId ---
-router.route('/:articleId').get(read).put(auth.protect, update).delete(auth.protect, deleteArticle);
+router.route('/:articleId').get(readByID).put(auth.protect, update).delete(auth.protect, deleteArticle);
+
+
 
 // 设置参数拦截器
 router.param('articleId', articleByID);
+
 
 export default router;

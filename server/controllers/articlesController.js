@@ -51,9 +51,14 @@ export const list = catchAsync(async (req, res) => {
 });
 
 // 4. 读取单篇
-export const read = (req, res) => {
+export const   readByID = (req, res) => {
   console.log(`req.article:${req.article}`);
   return sendResponse(res, 200, 'Sccuss get post ', req.article);
+};
+
+export const readBySlug = (req, res) => {
+  console.log(`req.article:${req.articleBySlug}`);
+  return sendResponse(res, 200, 'Sccuss get post ', req.articleBySlug);
 };
 
 // 5. 更新文章
@@ -83,6 +88,18 @@ export const articleByID = async (req, res, next, id) => {
   req.article = article;
   next();
 };
+
+export const articleBySlug = async (req, res, next) => {
+  const { slug } = req.params;
+  const article = await Article.findOne({ slug }).populate('creator', 'username nickName email');
+  console.log(`article: ${article}`);
+  if (!article) {
+    return next(new AppError(`Failed to load article${slug}`, 404));
+  }
+  req.articleBySlug = article;
+  next();
+};
+
 
 // // 凡是url中出现articleByID的，直接根据 ID 加载文章
 // export const articleByID = catchAsync(async (req, res, next, id) => {

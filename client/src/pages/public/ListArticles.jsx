@@ -23,8 +23,8 @@ function ListArticles() {
     fetchData();
   }, []);
 
-  const showDetail = (id) => {
-    navigate('/post/' + id);
+  const showDetail = (slug) => {
+    navigate('/posts/' + slug);
   };
 
   return (
@@ -50,13 +50,13 @@ function ListArticles() {
           <div className="list-group list-group-flush">
             {data.map((item) => (
               <a
-                key={item._id} // 使用真实的 ID 作为 key 比 idx 更好
-                href="#!"
+                key={item.slug} 
+                href={`/posts/${item.slug}`}
                 className="list-group-item list-group-item-action border-0 px-0 py-3"
                 style={{ fontSize: '1.1rem' }}
                 onClick={(e) => {
                   e.preventDefault();
-                  showDetail(item._id);
+                  showDetail(item.slug);
                 }}
               >
                 {item.title}
