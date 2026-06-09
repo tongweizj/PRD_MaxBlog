@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 // import axios from 'axios';
-import { getSite } from '../../features/site/siteApi';
+import { getSite, updateSite } from '../../features/site/siteApi';
 import { Spinner, Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -27,7 +27,7 @@ function BlogSetting(props) {
         setShowLoading(true);
         const result = await getSite();
         // 确保合并默认值防止 SimpleMDE 因为 null 报错
-        setSiteData((prev) => ({ ...prev, ...result.data.data }));
+        setSiteData((prev) => ({ ...prev, ...result.data }));
       } catch (error) {
         console.error('加载数据失败:', error);
       } finally {
@@ -40,19 +40,27 @@ function BlogSetting(props) {
   const updateSiteData = async (e) => {
     e.preventDefault();
     setShowLoading(true);
-    const result = await getSite();
-    if (!result.data) {
-      console.error('无法获取当前站点数据，更新失败');
+    //const result = 
+    //await 
+    updateSite(siteData).then(() => {
       setShowLoading(false);
-      return;
-    }else{
+      // navigate('/admin/dashboard');
+    }).catch((error) => {
+      console.error('更新失败:', error);
       setShowLoading(false);
-      navigate('/admin/dashboard');
-    }
+    });;
+    // if (!result.data) {
+    //   console.error('无法获取当前站点数据，更新失败');
+    //   setShowLoading(false);
+    //   return;
+    // } else {
+    //   setShowLoading(false);
+    //   navigate('/admin/dashboard');
+    // }
     // axios
     //   .put(`/api/api/site`, siteData)
     //   .then(() => {
-        
+
     //   })
     //   .catch((error) => {
     //     console.error('更新失败:', error);
@@ -81,7 +89,7 @@ function BlogSetting(props) {
 
   return (
     <div className="bg-light min-vh-100">
-      <h5 className="mb-2 fw-normal">Blog Settings</h5>
+      <h5 className="mb-2 fw-normal">Settings</h5>
 
       {showLoading ? (
         <div className="text-center p-5">
@@ -89,6 +97,7 @@ function BlogSetting(props) {
         </div>
       ) : (
         <Form onSubmit={updateSiteData} className="bg-white">
+          <h5 className="mb-2 fw-normal">Blog Info</h5>
           <Form.Group as={Row} className="mb-3 align-items-center">
             <Form.Label column sm={1}>
               blog name
@@ -113,7 +122,25 @@ function BlogSetting(props) {
               />
             </Col>
           </Form.Group>
-          {/* Project 编辑器 - 采用左标右文布局 */}
+
+          <h5 className="mb-2 fw-normal">Home Page Settings</h5>
+          {/* 个人信息 */}
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column sm={1} className="fw-bold">
+              About Me
+            </Form.Label>
+            <Col sm={8}>
+              <SimpleMDE
+                value={siteData.profile}
+                onChange={(val) => setSiteData({ ...siteData, profile: val })}
+                options={mdeOptions}
+              />
+              <small className="d-block text-muted fw-normal mt-1">
+                Explain what this site is about for the homepage.
+              </small>
+            </Col>
+          </Form.Group>
+          {/* 文章/Projects推荐列表 */}
           <Form.Group as={Row} className="mb-3">
             <Form.Label column sm={1}>
               Projects List
@@ -129,24 +156,6 @@ function BlogSetting(props) {
               </small>
             </Col>
           </Form.Group>
-
-          {/* Profile 编辑器 */}
-          <Form.Group as={Row} className="mb-3">
-            <Form.Label column sm={1} className="fw-bold">
-              Site Profile
-            </Form.Label>
-            <Col sm={8}>
-              <SimpleMDE
-                value={siteData.profile}
-                onChange={(val) => setSiteData({ ...siteData, profile: val })}
-                options={mdeOptions}
-              />
-              <small className="d-block text-muted fw-normal mt-1">
-                Explain what this site is about for the homepage.
-              </small>
-            </Col>
-          </Form.Group>
-
           {/* 底部保存按钮 */}
           <Row>
             <Col sm={{ span: 9, offset: 1 }}>

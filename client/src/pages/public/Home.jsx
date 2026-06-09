@@ -28,23 +28,22 @@ function Home(props) {
   }, []);
   return (
     <main className="w-full mt-0 md:mt-16">
-      <h1 id="lee-robinson" className="text-xl md:text-2xl mb-1 font-medium leading-13">
-        {siteData.blogname}
-      </h1>
-      <p className="text-copy my-5">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{siteData.profile}</ReactMarkdown>
-      </p>
-      <p className="text-copy my-5">Some of my favorite writing includes:</p>
 
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{siteData.project}</ReactMarkdown>
-      <p className="text-copy my-5">
+      <div className="">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{siteData.profile}</ReactMarkdown>
+      </div>
+      <div className="">Some of my favorite writing includes:</div>
+      <div className="myFav">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{siteData.project}</ReactMarkdown>
+      </div>
+      <p className="contectme">
         You can{' '}
         <a
           className="transition-colors underline decoration-neutral-500 decoration-1 underline-offset-[2.5px] hover:decoration-neutral-400 dark:hover:decoration-neutral-600"
           href="/writing"
         >
           read my writing
-        </a>
+        </a>{' '}
         or{' '}
         <a
           href="https://github.com/tongweizj"

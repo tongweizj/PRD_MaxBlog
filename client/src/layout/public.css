@@ -47,6 +47,32 @@ a {
 }
 
 /* 顶部导航微调 */
+
+.nav {
+    display: flex;
+    gap: 32px;
+    align-items: baseline;
+}
+
+.navbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 32px 20px 28px 20px;
+    gap: 24px;
+    margin-bottom: 40px;
+    margin-left: 8px;
+}
+.nav-brand, .nav-brand:hover, .nav-brand:focus, .nav-brand:visited {
+    display: inline-block;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: 0;
+}
+
 .nav-link {
     color: var(--text-muted) !important;
     padding: 0.5rem 1rem !important;
@@ -59,4 +85,54 @@ a {
 .nav-link.active {
     color: var(--text-color) !important;
     font-weight: bold;
+}
+
+/* 首页其他位置的css */
+
+.myFav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.myFav ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.contectme a,.myFav ul li a{
+    color: #171717;
+}
+.myFav ul li {
+    color: #171717;
+  position: relative;
+  padding-left: 18px; /* 调整文字与正方形的距离 */
+}
+
+/* 核心：用伪元素画出正方形子弹头 */
+.myFav li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  
+  /* 垂直居中 */
+  top: 50%;
+  transform: translateY(-50%); 
+  
+  /* 正方形的宽高（5px * 5px 会非常精致） */
+  width: 5px;
+  height: 5px;
+  
+  /* 【关键】不要写 border-radius，或者写 border-radius: 0; */
+  
+  /* 颜色：依然推荐高级的低饱和度灰色 */
+  background-color: #9ca3af; 
+  transition: background-color 0.2s ease;
+}
+
+/* 悬停效果 */
+.myFav li:hover::before {
+  background-color: #4b5563; 
 }

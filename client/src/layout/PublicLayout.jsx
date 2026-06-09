@@ -9,7 +9,8 @@ const PublicLayout = () => {
   return (
     <>
       <div className="container" style={{ maxWidth: '700px' }}>
-        <nav className="mb-5">
+        <nav className="mb-5 navbar">
+          <a href="/" class="nav-brand">Max Tong</a>
           <ul className="nav">
             <li className="nav-item">
               <Link className="nav-link ps-0" to="/">
