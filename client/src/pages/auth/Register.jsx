@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import Spinner from 'react-bootstrap/Spinner';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
-//
+
+import { signup } from '../../features/auth/authApi';
 
 // this component is used to create a new user
 function Register(props) {
@@ -18,19 +19,18 @@ function Register(props) {
   });
 
   const [showLoading, setShowLoading] = useState(false);
-  const apiUrl = '/api/api/users';
+  // const apiUrl = '/api/api/users';
 
   const saveUser = (e) => {
     setShowLoading(true);
     e.preventDefault();
-    const data = {
+    const credentials = {
       email: user.email,
       username: user.username,
       password: user.password,
     };
     //use promises
-    axios
-      .post(apiUrl, data)
+    signup(credentials)
       .then((result) => {
         setShowLoading(false);
         navigate('/');
