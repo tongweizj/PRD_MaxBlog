@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { useNavigate } from 'react-router-dom';
 import { getArticles } from '../../features/articles/articleApi';
-
+import './writing.css';
 function ListArticles() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -48,19 +48,15 @@ function ListArticles() {
         <main>
           {/* 使用 list-group-flush 移除外边框，适合文章列表 */}
           <div className="list-group list-group-flush">
-            {data.map((item) => (
-              <a
-                key={item.slug} 
-                href={`/posts/${item.slug}`}
-                className="list-group-item list-group-item-action border-0 px-0 py-3"
-                style={{ fontSize: '1.1rem' }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  showDetail(item.slug);
-                }}
-              >
-                {item.title}
-              </a>
+            {data.map((post) => (
+              <article key={post.id} className="post-item">
+                <span className="post-date">{post.created.substring(0, 10)}</span>
+                <div className="post-title-wrapper">
+                  <a href={`/writing/${post.slug}`} className="post-link">
+                    {post.title}
+                  </a>
+                </div>
+              </article>
             ))}
           </div>
         </main>
