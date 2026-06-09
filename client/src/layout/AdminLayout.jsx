@@ -18,7 +18,8 @@ import {
   Badge,
   Pagination,
 } from 'react-bootstrap';
-import axios from 'axios';
+
+import { logout } from '../features/auth/authApi';
 import './admin.css';
 const AdminLayout = ({ children }) => {
   const location = useLocation();
@@ -36,7 +37,7 @@ const AdminLayout = ({ children }) => {
   const handleLogout = async () => {
     if (window.confirm('确定要退出登录吗？')) {
       try {
-        await axios.get('/api/api/auth/signout');
+        await logout();
 
         navigate('/login');
       } catch (e) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import { getSite } from '../../features/site/siteApi';
 import { Spinner, Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -24,7 +25,7 @@ function BlogSetting(props) {
     const fetchData = async () => {
       try {
         setShowLoading(true);
-        const result = await axios.get('/api/api/site/');
+        const result = await getSite();
         // 确保合并默认值防止 SimpleMDE 因为 null 报错
         setSiteData((prev) => ({ ...prev, ...result.data.data }));
       } catch (error) {
@@ -36,19 +37,27 @@ function BlogSetting(props) {
     fetchData();
   }, [authname, isAuthLoading]);
 
-  const updateSiteData = (e) => {
+  const updateSiteData = async (e) => {
     e.preventDefault();
     setShowLoading(true);
-    axios
-      .put(`/api/api/site`, siteData)
-      .then(() => {
-        setShowLoading(false);
-        navigate('/admin/dashboard');
-      })
-      .catch((error) => {
-        console.error('更新失败:', error);
-        setShowLoading(false);
-      });
+    const result = await getSite();
+    if (!result.data) {
+      console.error('无法获取当前站点数据，更新失败');
+      setShowLoading(false);
+      return;
+    }else{
+      setShowLoading(false);
+      navigate('/admin/dashboard');
+    }
+    // axios
+    //   .put(`/api/api/site`, siteData)
+    //   .then(() => {
+        
+    //   })
+    //   .catch((error) => {
+    //     console.error('更新失败:', error);
+    //     setShowLoading(false);
+    //   });
   };
 
   const mdeOptions = useMemo(

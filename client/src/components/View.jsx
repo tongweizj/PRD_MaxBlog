@@ -1,10 +1,8 @@
 import CreateArticle from '../pages/admin/CreateUser';
 import ListArticles from '../pages/public/ListArticles';
-
+import { whoisme, logout } from '../../features/auth/authApi';
 import React, { useState } from 'react';
-//
-import axios from 'axios';
-//
+
 function View(props) {
   // read the info from props, coming from the ancestor component
   const { screen, setScreen } = props;
@@ -17,7 +15,7 @@ function View(props) {
   // back to its initial state.
   const deleteCookie = async () => {
     try {
-      await axios.get('/api/auth/signout');
+      await logout();
       setScreen('auth');
     } catch (e) {
       console.log(e);
@@ -28,8 +26,7 @@ function View(props) {
   // of cookie specific response from the server.
   const verifyCookie = async () => {
     try {
-      const res = await axios.get('/api/api/users/me');
-      console.log(res.data);
+      const res = await whoisme();
       setData(res.data);
     } catch (e) {
       console.log(e);
