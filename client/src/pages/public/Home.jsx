@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getSite } from '../../features/site/siteApi';
 
 function Home(props) {
   const [siteData, setSiteData] = useState({
@@ -14,9 +15,8 @@ function Home(props) {
     const fetchData = async () => {
       try {
         setShowLoading(true);
-        const apiUrl = '/api/api/site/';
-        const result = await axios.get(apiUrl);
-        setSiteData(result.data.data);
+        const result = await getSite();
+        setSiteData(result.data);
         console.log('siteData:', siteData);
       } catch (error) {
         console.error('加载数据失败:', error);
