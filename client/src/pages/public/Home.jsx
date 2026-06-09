@@ -47,7 +47,7 @@ function Home(props) {
         </a>
         or{' '}
         <a
-          href="https://github.com/leerob"
+          href="https://github.com/tongweizj"
           target="_blank"
           rel="noopener noreferrer"
           className="transition-colors underline decoration-neutral-500 decoration-1 underline-offset-[2.5px] hover:decoration-neutral-400 dark:hover:decoration-neutral-600"
@@ -56,25 +56,16 @@ function Home(props) {
         </a>
         , or{' '}
         <a
-          href="https://x.com/leerob"
+          href="https://x.com/tongweizj"
           target="_blank"
           rel="noopener noreferrer"
           className="transition-colors underline decoration-neutral-500 decoration-1 underline-offset-[2.5px] hover:decoration-neutral-400 dark:hover:decoration-neutral-600"
         >
           follow me online
         </a>
-        . I also make{' '}
+        {'. '}
         <a
-          href="https://www.youtube.com/@leerob"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="transition-colors underline decoration-neutral-500 decoration-1 underline-offset-[2.5px] hover:decoration-neutral-400 dark:hover:decoration-neutral-600"
-        >
-          videos
-        </a>
-        , advise companies, and do angel investing.{' '}
-        <a
-          href="mailto:lee@leerob.com"
+          href="mailto:tongweizj@gmail.com"
           target="_blank"
           rel="noopener noreferrer"
           className="transition-colors underline decoration-neutral-500 decoration-1 underline-offset-[2.5px] hover:decoration-neutral-400 dark:hover:decoration-neutral-600"
