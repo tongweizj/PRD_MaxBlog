@@ -40,12 +40,22 @@ export const requiresLogin = (req, res, next) => {
 
 // 创建用户
 export const create = catchAsync(async (req, res, next) => {
+  console.log('Creating user with data:', req.body);
   const user = new User(req.body);
-  const savedUser = await user.save();
-
+  // const savedUser = await user.save();
+  // console.log('User created successfully:', savedUser);
+  try {
+    const savedUser = await user.save();
+    console.log('User created successfully:', savedUser);
+    return sendResponse(res, 201, '用户创建成功', savedUser);
+  } catch (error) {
+    // 💡 打印具体的错误原因，看完日志后就知道是怎么回事了
+    console.error('🚨 保存用户时发生错误:', error.message || error);
+    throw error; // 将错误重新抛出，交给 catchAsync 兜底返回 500
+  }
   // 注意：Mongoose save 失败通常会抛出错误，被 catchAsync 捕获
   // 这里处理成功逻辑即可
-  return sendResponse(res, 201, '用户创建成功', savedUser);
+  // return sendResponse(res, 201, '用户创建成功', savedUser);
 });
 
 // 获取用户列表
