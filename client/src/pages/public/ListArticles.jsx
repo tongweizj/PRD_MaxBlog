@@ -52,7 +52,7 @@ function ListArticles() {
               <article key={post.id} className="post-item">
                 <span className="post-date">{post.created.substring(0, 10)}</span>
                 <div className="post-title-wrapper">
-                  <a href={`/writing/${post.slug}`} className="post-link">
+                  <a href={`/posts/${post.slug}`} className="post-link">
                     {post.title}
                   </a>
                 </div>
