@@ -13,8 +13,8 @@ const db = configureMongoose();
 const app = configureExpress();
 
 // 3. 监听端口
-app.listen(5000, () => {
-  console.log('Server running at http://localhost:5000/');
+app.listen(5001, () => {
+  console.log('Server running at http://localhost:5001/');
 });
 
 // 使用 export default 代替 module.exports
