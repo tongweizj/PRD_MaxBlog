@@ -1,34 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+// 引入刚刚拆分出去的原始 Context
+import { AuthContext } from '../context/AuthContext';
 
-import { whoisme } from '../features/auth/authApi';
 export function useAuth() {
-  const [authname, setAuthname] = useState(null);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const navigate = useNavigate();
+  const context = useContext(AuthContext);
 
-  useEffect(() => {
-    // 关键：因为使用 Cookie，必须设置 withCredentials
-    const checkAuth = async () => {
-      try {
-        const response = await whoisme();
+  // 依然保留这层安全检查，但代码结构现在非常干净
+  if (!context) {
+    throw new Error('useAuth 必须在 AuthProvider 包裹内使用');
+  }
 
-        // 如果成功，返回的是 payload.username
-        setAuthname(response.data);
-        // console.log('response.data:', response.data);
-        setIsAuthLoading(false);
-      } catch (error) {
-        // 如果后端返回 401 (token 不存在或失效)
-
-        console.log('未授权或登录过期，跳转登录页');
-        setAuthname(null);
-      } finally {
-        setIsAuthLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
-
-  return { authname, isAuthLoading };
+  // 返回状态给组件（例如：const { authname, isAuthLoading } = useAuth()）
+  return context;
 }
