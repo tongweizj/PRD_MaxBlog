@@ -20,7 +20,7 @@ import {
 } from 'react-bootstrap';
 
 import { logout } from '../features/auth/authApi';
-import './admin.css';
+import './AdminLayout.css';
 const AdminLayout = ({ children }) => {
   const location = useLocation();
   let navigate = useNavigate();
@@ -28,6 +28,7 @@ const AdminLayout = ({ children }) => {
     { name: 'Dashboard', path: '/admin/dashboard', icon: <i className="bi bi-speedometer2"></i> },
     { name: 'Posts', path: '/admin/posts', icon: <i className="bi bi-journal-text"></i> },
     { name: 'Settings', path: '/admin/setting', icon: <i className="bi bi-journal-text"></i> },
+    { name: 'Profile', path: '/admin/profile', icon: <i className="bi bi-journal-text"></i> },
   ];
 
   // 侧边栏折叠状态

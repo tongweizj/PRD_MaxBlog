@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { getSite, updateSite } from '../../features/site/siteApi';
 import { Spinner, Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 

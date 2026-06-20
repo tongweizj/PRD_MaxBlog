@@ -1,83 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
-
-import { whoisme, login } from '../../features/auth/authApi';
+import { useAuth } from '../../context/AuthContext';
+import { login } from '../../features/auth/authApi';
 
 const Login = () => {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+
+  // 从全局 Auth 状态中解构出当前登录状态和刷新状态的方法
+  const { authname, isAuthLoading, checkAuth } = useAuth();
+
   // 表单数据状态
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  
+
   // 页面控制状态
-  const [isPageLoading, setIsPageLoading] = useState(true); // 控制全屏加载
   const [isSubmitting, setIsSubmitting] = useState(false);  // 控制登录按钮加载状态
   const [errorMessage, setErrorMessage] = useState('');     // 控制错误提示信息
 
-  // 1. 初始化检查：是否已经登录
-  const checkAuthStatus = async () => {
-    try {
-      const res = await whoisme();
-      console.log('身份验证检查:', res);
-      
-      // 前提：你的 axios 拦截器直接返回了后端完整结构 res.data
-      if (res.code === 200) {
-        // 已登录，跳转到后台
-        navigate('/admin/dashboard', { replace: true });
-      } else {
-        // 未登录（正常情况），关闭 Loading 显示表单
-        setIsPageLoading(false);
-      }
-    } catch (e) {
-      // Axios 拦截器抛出的 401 等错误会走到这里
-      console.log('用户未登录，停留在登录页:', e);
-      setIsPageLoading(false);
-    }
-  };
+  // 获取用户被拦截前原本想去的页面，如果没有，默认登录后去仪表盘
+  const from = location.state?.from?.pathname || '/admin/dashboard';
 
-  // 2. 组件挂载时执行检查
+  // 2. 代替原有的 checkAuthStatus：监听全局 authname 变化
   useEffect(() => {
-    checkAuthStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!isAuthLoading && authname) {
+      // 如果全局状态显示已经有登录名了，直接送他去该去的地方
+      navigate(from, { replace: true });
+    }
+  }, [authname, isAuthLoading, navigate, from]);
 
   // 3. 处理表单提交
   const authenticateUser = async (e) => {
-    e.preventDefault(); // 阻止浏览器默认刷新
-    
+    e.preventDefault();
+
     if (!username || !password) {
       setErrorMessage('用户名和密码不能为空');
       return;
     }
 
     setIsSubmitting(true);
-    setErrorMessage(''); // 清除上一次的错误信息
+    setErrorMessage('');
 
     try {
       const credentials = { auth: { username, password } };
-      // 使用你配置好拦截器的 http 实例发起请求
       const res = await login(credentials);
-      console.log('login(credentials):', res);
-      // 根据后端的返回结构判断
+
       if (res.code === 200) {
-        navigate('/admin/dashboard', { replace: true });
+        // 🌟 核心改动：登录成功后，立即触发全局 Auth 状态重新拉取
+        // 这会更新 AuthContext 里的 authname，随后上面的 useEffect 会感应到并自动执行路由跳转
+        await checkAuth();
       } else {
-        // 应对 code 不是 200 的业务错误
         setErrorMessage(res.message || '登录失败，请检查账号密码');
+        setIsSubmitting(false); // 只有失败了才需要恢复按钮，成功了就等路由跳转了
       }
     } catch (e) {
-      // 捕获网络错误或拦截器 reject 出来的后端错误对象
       console.error('登录请求异常:', e);
       setErrorMessage(e.message || '登录请求失败，请稍后重试');
-    } finally {
-      setIsSubmitting(false); // 无论成功失败，恢复按钮状态
+      setIsSubmitting(false);
     }
   };
 
-  // 4. 渲染全屏 Loading 动画（防止表单闪现）
-  if (isPageLoading) {
+  // 4. 渲染全屏 Loading 动画（由全局加载状态托管）
+  if (isAuthLoading) {
     return (
       <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: '100vh' }}>
         <Spinner animation="border" variant="primary" />
@@ -91,7 +76,6 @@ const Login = () => {
     <div className="container mt-5" style={{ maxWidth: '400px' }}>
       <h2 className="text-center mb-4">系统登录</h2>
 
-      {/* 如果有错误信息，显示一个红色的提示框 */}
       {errorMessage && (
         <Alert variant="danger" onClose={() => setErrorMessage('')} dismissible>
           {errorMessage}
@@ -106,7 +90,7 @@ const Login = () => {
             placeholder="请输入用户名"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            disabled={isSubmitting} // 提交中禁用输入框
+            disabled={isSubmitting}
           />
         </Form.Group>
 
@@ -117,15 +101,15 @@ const Login = () => {
             placeholder="请输入密码"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            disabled={isSubmitting} // 提交中禁用输入框
+            disabled={isSubmitting}
           />
         </Form.Group>
 
-        <Button 
-          variant="primary" 
-          type="submit" 
-          className="w-100" 
-          disabled={isSubmitting} // 提交中禁用按钮
+        <Button
+          variant="primary"
+          type="submit"
+          className="w-100"
+          disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>

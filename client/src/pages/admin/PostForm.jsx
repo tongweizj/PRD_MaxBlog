@@ -1,198 +1,210 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getArticleById, createArticle, updateArticle } from '../../features/articles/articleApi';
-
 import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
-
 import { Form, Button, Card, Row, Col, Spinner } from 'react-bootstrap';
+import FormActions from '../../components/admin/FormActions';
 
-import { useAuth } from '../../hooks/useAuth';
+// 辅助函数：将任何日期转换为 HTML5 datetime-local 输入框所需的 YYYY-MM-DDTHH:mm 格式
+const formatDatetimeLocal = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+
+  const pad = (num) => String(num).padStart(2, '0');
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 
 function PostForm() {
-  let navigate = useNavigate();
-
-  let { id } = useParams(); // Get the userId param from the URL.
-  const isEditMode = !!id; // 判断是否为编辑模式
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
 
   const [post, setPost] = useState({
-    _id: '',
     title: '',
     content: '',
     slug: '',
     status: 'published',
+    created: formatDatetimeLocal(new Date()), // 新增：默认当前时间
   });
 
-  const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(false);
-  const { authname, loading: isAuthLoading } = useAuth();
+  const [loading, setLoading] = useState(false);       // 用于提交表单时的 Loading
+  const [fetching, setFetching] = useState(false);     // 用于编辑模式下获取初始化数据的 Loading
 
-  // 1. 如果是编辑模式，初始化时获取旧数据
+  // 1. 如果是编辑模式，获取旧数据
   useEffect(() => {
     const fetchData = async () => {
       if (isEditMode) {
-        setFetching(true);
-        const result = await getArticleById(id);
-        console.log(`result: `, result);
-        setPost(result.data);
-        setFetching(false);
+        try {
+          setFetching(true);
+          const result = await getArticleById(id);
+          const articleData = result.data || result;
+          setPost({
+            title: articleData.title || '',
+            content: articleData.content || '',
+            slug: articleData.slug || '',
+            status: articleData.status || 'published',
+            created: formatDatetimeLocal(articleData.created),
+          });
+        } catch (error) {
+          console.error('加载文章详情失败:', error.message || error);
+        } finally {
+          setFetching(false);
+        }
       }
     };
     fetchData();
   }, [id, isEditMode]);
 
-  // 配置项：可以自定义工具栏、自动聚焦等
-  const autofocusOptions = useMemo(() => {
-    return {
-      autofocus: true,
-      spellChecker: false, // 建议关闭拼写检查（中文环境下没用且费性能）
-      placeholder: '开始撰写你的精彩故事...',
-      // status: ["autosave", "lines", "words", "cursor"], // 底部状态栏显示信息
-    };
-  }, []);
+  // 配置编辑器
+  const autofocusOptions = useMemo(() => ({
+    autofocus: false,
+    spellChecker: false,
+    placeholder: "开始撰写文章内容...",
+  }), []);
 
-  // 处理普通输入框
   const onChange = (e) => {
-    setPost({ ...post, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPost((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 处理 Markdown 编辑器 (Content)
-  // SimpleMDE 的 onChange 返回的是直接的 value (string)
   const onContentChange = (value) => {
-    setPost({ ...post, content: value });
+    setPost((prev) => ({ ...prev, content: value }));
   };
 
+  // 2. 提交表单逻辑
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    const payload = { ...post, username: authname.username };
-    console.log('payload:', payload);
+    if (!post.title.trim() || !post.content.trim()) {
+      alert("请完整填写标题和内容！");
+      return;
+    }
+
     try {
+      setLoading(true);
       if (isEditMode) {
-        // 编辑操作
-        await updateArticle(id, payload);
+        await updateArticle(id, post);
       } else {
-        // 创建操作
-        await createArticle(payload);
+        await createArticle(post);
       }
+      // 🌟 修复：保存成功后切回列表页
       navigate('/admin/posts');
     } catch (error) {
-      console.error('提交失败', error);
-      alert('保存失败，请检查后端接口');
+      console.error('保存文章失败:', error.message || error);
     } finally {
       setLoading(false);
     }
   };
+
   if (fetching) {
     return (
-      <div className="text-center mt-5">
-        <Spinner animation="grow" variant="primary" />
-        <p>正在加载文章内容...</p>
+      <div className="text-center py-5">
+        <Spinner animation="border" variant="primary" />
+        <div className="text-muted small mt-2">正在拉取文章详情...</div>
       </div>
     );
   }
 
   return (
-    <div>
-      <Row className="">
-        <Col lg={10}>
-          <Card className="shadow-sm border-0">
-            <Card.Header className="bg-white border-bottom py-3">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h5 className="mb-0 fw-bold">{isEditMode ? 'Edit Post' : 'Add Post'}</h5>
-                  <small className="text-muted">
-                    {isEditMode ? `正在修改 ID: ${id}` : '让世界看到你的想法'}
-                  </small>
-                </div>
-                <Button variant="outline-secondary" size="sm" onClick={() => navigate(-1)}>
-                  Back Posts
-                </Button>
-              </div>
+    <div className="container-fluid p-0">
+      <Row>
+        <Col xs={12}>
+          <Card className="border-0 shadow-sm">
+            <Card.Header className="bg-transparent border-0 pt-4 px-4 pb-0">
+              <h5 className="fw-bold m-0">{isEditMode ? '修改文章' : '写新文章'}</h5>
             </Card.Header>
-
             <Card.Body className="p-4">
               <Form onSubmit={handleSubmit}>
                 <Row>
-                  <Col md={12}>
-                    <Form.Group className="mb-3 fs-6">
-                      <Form.Label column sm={1} className="fs-6">
-                        Title
-                      </Form.Label>
-                      <Form.Control
-                        size="sm"
-                        name="title"
-                        value={post.title}
-                        onChange={onChange}
-                        placeholder="在此输入标题"
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label className="fs-6">Slug</Form.Label>
+                      <Form.Label className="small fw-semibold">文章标题</Form.Label>
                       <Form.Control
-                        size="sm"
-                        name="slug"
-                        value={post.slug}
+                        type="text"
+                        name="title"
+                        value={post.title}
+                        placeholder="请输入标题"
                         onChange={onChange}
-                        placeholder="在此输入slug"
                         required
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    {/* 状态选择 */}
-                    <Form.Group className="mb-4">
-                      <Form.Label className="fw-bold d-block">Status</Form.Label>
-                      <Form.Check
-                        inline
-                        type="radio"
-                        label="Published"
-                        name="status"
-                        value="published"
-                        checked={post.status === 'published'}
-                        onChange={onChange}
-                      />
-                      <Form.Check
-                        inline
-                        type="radio"
-                        label="Draft"
-                        name="status"
-                        value="draft"
-                        checked={post.status === 'draft'}
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="small fw-semibold">自定义 Slug (URL 别名)</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="slug"
+                        value={post.slug}
+                        placeholder="例如: my-first-post"
                         onChange={onChange}
                       />
                     </Form.Group>
                   </Col>
+                  <Col md={3}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="small fw-semibold">发布时间</Form.Label>
+                      <Form.Control
+                        type="datetime-local"
+                        name="created"
+                        value={post.created}
+                        onChange={onChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={2}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="small fw-semibold d-block">发布状态</Form.Label>
+                      <div className="mt-2">
+                        <Form.Check
+                          inline
+                          type="radio"
+                          label="发布"
+                          name="status"
+                          value="published"
+                          checked={post.status === 'published'}
+                          onChange={onChange}
+                          className="small"
+                        />
+                        <Form.Check
+                          inline
+                          type="radio"
+                          label="草稿"
+                          name="status"
+                          value="draft"
+                          checked={post.status === 'draft'}
+                          onChange={onChange}
+                          className="small"
+                        />
+                      </div>
+                    </Form.Group>
+                  </Col>
                 </Row>
-                <div className="editor-container mb-3">
-                  <span className="fs-6">Body</span>
+
+                <div className="editor-container mb-4">
+                  <Form.Label className="small fw-semibold">文章正文</Form.Label>
                   <SimpleMDE
                     value={post.content}
                     onChange={onContentChange}
                     options={autofocusOptions}
                   />
                 </div>
-                <div className=" pt-3 text-start">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="sm"
-                    disabled={loading}
-                    className="px-4"
-                  >
-                    {loading ? (
-                      <Spinner size="sm" animation="border" />
-                    ) : isEditMode ? (
-                      'Save'
-                    ) : (
-                      'Publish'
-                    )}
-                  </Button>
+
+                <div className="text-start">
+                  <FormActions
+                    loading={loading}
+                    submitText={isEditMode ? '保存修改' : '立即发布'}
+                    cancelPath="/admin/posts"
+                  />
                 </div>
               </Form>
             </Card.Body>
@@ -202,5 +214,5 @@ function PostForm() {
     </div>
   );
 }
-//
+
 export default PostForm;

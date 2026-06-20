@@ -19,7 +19,12 @@ export function AuthProvider({ children }) {
 
             setAuthname(username);
         } catch (error) {
-            console.warn('⚡ [Auth] 未授权或登录过期:', error.message || error);
+            // 区分正常的未登录状态和系统异常
+            if (error.status !== 401) {
+                console.error('❌ [Auth] 获取身份异常:', error.message);
+            } else {
+                console.warn('⚡ [Auth] 用户未登录或会话过期');
+            }
             setAuthname(null);
         } finally {
             setIsAuthLoading(false);
@@ -40,4 +45,12 @@ export function AuthProvider({ children }) {
             {children}
         </AuthContext.Provider>
     );
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth 必须在 AuthProvider 包裹内使用');
+    }
+    return context;
 }
