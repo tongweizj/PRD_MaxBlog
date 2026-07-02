@@ -1,10 +1,10 @@
 ﻿import mongoose from 'mongoose';
-const { model } = mongoose;
-const Article = model('Article');
-const User = model('User');
 import catchAsync from '../utils/catchAsync.js';
 import { sendResponse } from '../utils/response.js';
 import AppError from '../utils/AppError.js';
+
+import User from '../models/User.js';
+import Article from '../models/Article.js';
 
 const getErrorMessage = (err) => {
   if (err.errors) {
@@ -19,7 +19,7 @@ const getErrorMessage = (err) => {
 // 1. 创建文章
 export const create = catchAsync(async (req, res, next) => {
   // 1. 显式解构你需要的字段，绝对不要解构 _id
-  const { title, content, slug, status } = req.body;
+  const { title, content, slug, status, author } = req.body;
 
   // 2. 创建一个纯净的数据对象，不带任何多余属性
   const articleData = {
@@ -30,12 +30,16 @@ export const create = catchAsync(async (req, res, next) => {
   };
 
   const article = new Article(articleData);
-  const user = await User.findOne({ username: req.body.username });
+  console.log(`author: ${author}`);
+  const user = await User.findOne({ username: author });
+  console.log(`article: ${article}`);
+  console.log(`user: ${user}`);
   if (!user) {
     return next(new AppError('User not found', 400));
   }
 
   article.creator = user._id;
+  console.log(`article: ${article}`);
   const savedArticle = await article.save();
 
   return sendResponse(res, 201, 'Sccuss create post', savedArticle);
@@ -51,7 +55,7 @@ export const list = catchAsync(async (req, res) => {
 });
 
 // 4. 读取单篇
-export const   readByID = (req, res) => {
+export const readByID = (req, res) => {
   console.log(`req.article:${req.article}`);
   return sendResponse(res, 200, 'Sccuss get post ', req.article);
 };
