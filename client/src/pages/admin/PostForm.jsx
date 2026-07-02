@@ -5,6 +5,7 @@ import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 import { Form, Button, Card, Row, Col, Spinner } from 'react-bootstrap';
 import FormActions from '../../components/admin/FormActions';
+import { useAuth } from '../../context/AuthContext';
 
 // 辅助函数：将任何日期转换为 HTML5 datetime-local 输入框所需的 YYYY-MM-DDTHH:mm 格式
 const formatDatetimeLocal = (dateString) => {
@@ -27,13 +28,14 @@ function PostForm() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
-
+  const { authname, isAuthLoading } = useAuth();
   const [post, setPost] = useState({
     title: '',
     content: '',
     slug: '',
     status: 'published',
     created: formatDatetimeLocal(new Date()), // 新增：默认当前时间
+    author: authname.username || '', // 新增：默认当前登录用户
   });
 
   const [loading, setLoading] = useState(false);       // 用于提交表单时的 Loading
